@@ -346,6 +346,19 @@ public class RpcClientProcessServiceImpl implements RpcClientProcessService, Ini
 		return true;
 	}
 
+	public static final byte[] input2byte(InputStream inStream)
+			throws IOException {
+		ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
+		byte[] buff = new byte[100];
+		int rc = 0;
+		while ((rc = inStream.read(buff, 0, 100)) > 0) {
+			swapStream.write(buff, 0, rc);
+		}
+		byte[] in2b = swapStream.toByteArray();
+		return in2b;
+	}
+
+
 	public boolean sendLz4CoreRpc(int targetNodeId, ByteString content, String reqId, RpcId rpcId) {
 		logger.info("发送RPC记录,目标节点ID:{},请求ID:{},RPC:{}", targetNodeId, reqId, rpcId.getValueDescriptor().getName());
 
@@ -353,7 +366,7 @@ public class RpcClientProcessServiceImpl implements RpcClientProcessService, Ini
 		try (InputStream in = new ByteArrayInputStream(content.toByteArray());
 				ByteArrayOutputStream bOut = new ByteArrayOutputStream();
 				FramedLZ4CompressorOutputStream lzOut = new FramedLZ4CompressorOutputStream(bOut);) {
-			lzOut.write(in.readAllBytes());
+			lzOut.write(input2byte(in));
 			lzOut.close();
 			contentByteString = ByteString.copyFrom(bOut.toByteArray());
 		} catch (IOException e) {
