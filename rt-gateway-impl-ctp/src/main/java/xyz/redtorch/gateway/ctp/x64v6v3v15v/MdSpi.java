@@ -2,12 +2,14 @@ package xyz.redtorch.gateway.ctp.x64v6v3v15v;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
@@ -430,8 +432,16 @@ public class MdSpi extends CThostFtdcMdSpi {
 				
 				LocalDateTime dateTime;
 				try {
-					dateTime = LocalDateTime.parse(updateDateTimeWithMS,
-							CommonConstant.DT_FORMAT_WITH_MS_INT_FORMATTER);
+					DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+							// 解析date+time
+							.appendPattern("yyyyMMddHHmmssSSS")
+							// 解析毫秒数
+							.appendValue(ChronoField.MILLI_OF_SECOND, 3)
+							.toFormatter();
+					LocalDate dt = LocalDate.parse(updateDateTimeWithMS, formatter);
+					ZoneId zone = ZoneId.systemDefault();
+					Instant instant = dt.atStartOfDay().atZone(zone).toInstant();
+					dateTime = LocalDateTime.ofInstant(instant, zone);
 				} catch (Exception e) {
 					logger.error("{}解析日期发生异常", logInfo, e);
 					return;

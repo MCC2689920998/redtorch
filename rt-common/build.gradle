@@ -1,6 +1,24 @@
+apply plugin: 'maven'
+
 group = "${rootProject.group}"
 version = "${rootProject.version}"
 description = """通用模块"""
+
+
+task writeNewPom {
+	pom {
+		project {
+			inceptionYear '2014'
+			licenses {
+				license {
+					name 'The Apache Software License, Version 2.0'
+					url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					distribution 'repo'
+				}
+			}
+		}
+	}.writeTo("pom.xml")
+}
 
 dependencies {
 	compile project(':rt-pb')

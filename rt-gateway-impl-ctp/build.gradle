@@ -4,4 +4,6 @@ description = """CTP网关接口模块"""
 
 dependencies {
 	compile project(':rt-gateway-api')
+	testCompile "junit:junit:4.12"
+
 }

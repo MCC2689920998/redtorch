@@ -4,7 +4,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 import org.bson.Document;
@@ -314,8 +316,9 @@ public class MongoDBUtils {
 					Date newObject = new Date((Long) object);
 					m.invoke(bean, newObject);
 				} else if (objectClzz == long.class) {
-					//Date newObject = new Date((long) object);
-                    Date newObject= new Date();
+					long time = Long.valueOf(String.valueOf(object));
+					Date newObject = new Date(time);
+                    //Date newObject= new Date();
                     m.invoke(bean, newObject);
 				} else {
 					log.error("Class-{}中成员变量{}的类型{}与当前值的类型{}不匹配,不可赋值", bean.getClass().getName(), varName,
@@ -324,18 +327,21 @@ public class MongoDBUtils {
 			} else if (beanFieldClazz == LocalDateTime.class) {
 				Method m = bean.getClass().getMethod("set" + upperCaseVarName, LocalDateTime.class);
 				if (objectClzz == Date.class) {
+					//TODO
 					Date date = (Date) object;
 					//LocalDateTime newObject = CommonUtils.millsToLocalDateTime(date.getTime());
-					//m.invoke(bean, newObject);
+					Instant instant = Instant.ofEpochMilli(date.getTime());
+					m.invoke(bean, instant.atZone(ZoneId.systemDefault()).toLocalDateTime());
 				} else if (objectClzz == Long.class) {
 					// 使用Long存储时间戳不存在时间错位问题
 					//LocalDateTime newObject = CommonUtils.millsToLocalDateTime((Long) object);
-					//m.invoke(bean, newObject);
+					Instant instant = Instant.ofEpochMilli((Long) object);
+					m.invoke(bean, instant.atZone(ZoneId.systemDefault()).toLocalDateTime());
 				} else if (objectClzz == long.class) {
 					// 使用long存储时间戳不存在时间读取错位问题
 					//LocalDateTime newObject = CommonUtils.millsToLocalDateTime((long) object);
-					//m.invoke(bean, newObject);
-				} else {
+					Instant instant = Instant.ofEpochMilli((Long) object);
+					m.invoke(bean, instant.atZone(ZoneId.systemDefault()).toLocalDateTime());				} else {
 					log.error("Class-{}中成员变量{}的类型{}与当前值的类型{}不匹配,不可赋值", bean.getClass().getName(), varName,
 							beanFieldClazz, objectClzz);
 				}
@@ -345,4 +351,9 @@ public class MongoDBUtils {
 			throw new RuntimeException(e);
 		}
 	}
+
+
+
+
+
 }
