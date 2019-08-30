@@ -434,7 +434,7 @@ public class MdSpi extends CThostFtdcMdSpi {
 				try {
 					DateTimeFormatter formatter = new DateTimeFormatterBuilder()
 							// 解析date+time
-							.appendPattern("yyyyMMddHHmmssSSS")
+							.appendPattern("yyyyMMddHHmmss")
 							// 解析毫秒数
 							.appendValue(ChronoField.MILLI_OF_SECOND, 3)
 							.toFormatter();

@@ -2,6 +2,8 @@ plugins {
 	id 'org.springframework.boot' version '2.1.0.RELEASE'
 }
 
+apply plugin: 'maven'
+
 group = "${rootProject.group}"
 version = "${rootProject.version}"
 description = """子节点模块"""
@@ -22,4 +24,19 @@ dependencies {
     // compile group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version:"${rootProject.springBootVersion}"
 	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version:"${rootProject.springBootVersion}"
 	testCompile group: 'org.springframework', name: 'spring-test', version: "${rootProject.springTestVersion}"
+}
+
+task writeNewPom {
+	pom {
+		project {
+			inceptionYear '2014'
+			licenses {
+				license {
+					name 'The Apache Software License, Version 2.0'
+					url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					distribution 'repo'
+				}
+			}
+		}
+	}.writeTo("pom.xml")
 }
